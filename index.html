@@ -1,28 +1,163 @@
-バトルコロシアムタッグ 計算機
-iPhoneでそのまま使える超軽量HTML版です。Safariで開いて使えます。
-攻撃側を切替
-試合をリセット
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バトルコロシアムタッグ 計算機</title>
 
+<style>
+body{
+font-family:sans-serif;
+background:#111;
+color:white;
+text-align:center;
+padding:20px;
+}
 
-攻撃処理
+h1{
+font-size:24px;
+margin-bottom:10px;
+}
 
-          チームAが攻撃
-          チームBが攻撃
-        
+.hp{
+font-size:22px;
+margin:10px;
+}
 
-ダメージ計算を適用
-・通常：100の位 × 100（例 437 → 400）
-・ゾロ目：クリティカルで +200
-・999：1800ダメージ
-・000：自分のチームに 1000ダメージ
-・交代：交代先メンバーが初回のみ HP+500
-・LB攻撃：次の攻撃に +500
-・LB回復：HP +600
-・LB防御：次に受ける攻撃を1回無効
-バトルログ
-使い方メモ
-1. 攻撃するチームを選びます。
-2. FF14の /random の結果を入力します。
-3. ダメージ計算を適用 を押します。
-4. 交代したい時は各チームの メンバー交代 を押します。
-5. HPが1000未満になったら、そのチームは LB を1回だけ使えます。
+button{
+font-size:20px;
+padding:15px;
+margin:10px;
+width:200px;
+border:none;
+border-radius:10px;
+background:#3498db;
+color:white;
+}
+
+button:hover{
+background:#2980b9;
+}
+
+.reset{
+background:#e74c3c;
+}
+
+.log{
+margin-top:20px;
+padding:10px;
+background:#222;
+border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>バトルコロシアムタッグ</h1>
+
+<div class="hp">
+チームA HP  
+<span id="hpA">3000</span>
+</div>
+
+<div class="hp">
+チームB HP  
+<span id="hpB">3000</span>
+</div>
+
+<button onclick="attack('A')">チームA攻撃</button>
+<button onclick="attack('B')">チームB攻撃</button>
+
+<br>
+
+<button class="reset" onclick="resetGame()">試合リセット</button>
+
+<div class="log" id="log">
+ここに結果が表示されます
+</div>
+
+<script>
+
+let hpA = 3000
+let hpB = 3000
+
+function randomDice(){
+return Math.floor(Math.random()*1000)
+}
+
+function attack(team){
+
+let dice = randomDice()
+let damage = Math.floor(dice/100)*100
+
+if(dice===999){
+damage = damage*2
+}
+
+if(dice%111===0 && dice!==0){
+damage +=200
+}
+
+if(dice===0){
+damage = -1000
+}
+
+if(team==="A"){
+
+hpB -= damage
+
+if(damage<0){
+hpA +=1000
+}
+
+}
+
+if(team==="B"){
+
+hpA -= damage
+
+if(damage<0){
+hpB +=1000
+}
+
+}
+
+update()
+
+document.getElementById("log").innerHTML =
+"ダイス:"+dice+" ダメージ:"+damage
+
+}
+
+function update(){
+
+document.getElementById("hpA").innerHTML = hpA
+document.getElementById("hpB").innerHTML = hpB
+
+if(hpA<=0){
+alert("チームB勝利！")
+}
+
+if(hpB<=0){
+alert("チームA勝利！")
+}
+
+}
+
+function resetGame(){
+
+hpA = 3000
+hpB = 3000
+
+update()
+
+document.getElementById("log").innerHTML =
+"試合リセット"
+
+}
+
+</script>
+
+</body>
+</html>
