@@ -1,163 +1,428 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>バトルコロシアムタッグ 計算機</title>
-
-<style>
-body{
-font-family:sans-serif;
-background:#111;
-color:white;
-text-align:center;
-padding:20px;
-}
-
-h1{
-font-size:24px;
-margin-bottom:10px;
-}
-
-.hp{
-font-size:22px;
-margin:10px;
-}
-
-button{
-font-size:20px;
-padding:15px;
-margin:10px;
-width:200px;
-border:none;
-border-radius:10px;
-background:#3498db;
-color:white;
-}
-
-button:hover{
-background:#2980b9;
-}
-
-.reset{
-background:#e74c3c;
-}
-
-.log{
-margin-top:20px;
-padding:10px;
-background:#222;
-border-radius:10px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <title>バトルコロシアムタッグ</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121933;
+      --panel2:#0f1630;
+      --line:#2a376a;
+      --text:#eef3ff;
+      --muted:#a8b4da;
+      --blue:#3fa7ff;
+      --red:#ff6464;
+      --green:#46d6a2;
+      --gold:#ffcf5a;
+      --shadow:0 12px 24px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#070b16,#0b1020 18%,#111934);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic","Segoe UI",sans-serif;
+    }
+    .wrap{max-width:840px;margin:0 auto;padding:16px 14px 32px}
+    .panel{
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:14px;
+      box-shadow:var(--shadow);
+      margin-bottom:14px;
+      backdrop-filter:blur(6px);
+    }
+    h1{
+      margin:4px 0 8px;
+      text-align:center;
+      font-size:31px;
+      letter-spacing:.04em;
+    }
+    .sub{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      margin-bottom:8px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+    @media(min-width:760px){ .grid{grid-template-columns:1fr 1fr} }
+    .team-title{
+      display:flex;justify-content:space-between;align-items:center;gap:8px;
+      margin-bottom:8px;font-size:24px;font-weight:800;
+    }
+    .mini{
+      font-size:12px;color:var(--muted)
+    }
+    .hp-row{
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:18px;margin-bottom:8px
+    }
+    .bar{
+      height:18px;background:#0a0f20;border-radius:999px;overflow:hidden;border:1px solid var(--line)
+    }
+    .fill{
+      height:100%;
+      width:100%;
+      transition:width .25s ease;
+      background:linear-gradient(90deg,#6db6ff,#2e8fff);
+      box-shadow:0 0 18px rgba(63,167,255,.45);
+    }
+    .fill.red{
+      background:linear-gradient(90deg,#ff8f8f,#ff5454);
+      box-shadow:0 0 18px rgba(255,84,84,.35);
+    }
+    .status-row{
+      display:flex;gap:8px;flex-wrap:wrap;margin-top:10px
+    }
+    .chip{
+      background:#0d1430;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:12px
+    }
+    .chip.on{background:#16305e;border-color:#3a70d4}
+    .members{
+      display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px
+    }
+    .member{
+      background:#0d1430;border:1px solid var(--line);border-radius:16px;padding:10px
+    }
+    .member.active{outline:2px solid var(--gold)}
+    .member .name{font-weight:700;font-size:16px}
+    .member .desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}
+    .section-title{
+      font-size:18px;font-weight:800;margin-bottom:10px
+    }
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row > *{flex:1 1 160px}
+    button, select, input{
+      width:100%;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#0f1630;
+      color:var(--text);
+      min-height:52px;
+      padding:12px 14px;
+      font-size:18px;
+    }
+    button{
+      font-weight:800;
+      box-shadow:var(--shadow);
+    }
+    .primary{background:linear-gradient(180deg,#379cf2,#277fd0)}
+    .danger{background:linear-gradient(180deg,#ff6666,#eb4d4d)}
+    .green{background:linear-gradient(180deg,#46d6a2,#2aa97d)}
+    .gold{background:linear-gradient(180deg,#ffd56b,#d9aa2f); color:#2b2205}
+    .ghost{background:#0f1630}
+    button:disabled{opacity:.45}
+    .help{
+      color:var(--muted);font-size:13px;line-height:1.6
+    }
+    .turn{
+      font-size:21px;font-weight:900;text-align:center;margin-bottom:10px
+    }
+    .log{
+      display:flex;flex-direction:column;gap:8px;max-height:300px;overflow:auto
+    }
+    .log-item{
+      background:#0d1430;border:1px solid var(--line);border-radius:16px;padding:10px 12px;line-height:1.55;font-size:14px
+    }
+    .winner{
+      text-align:center;
+      font-size:28px;
+      font-weight:900;
+      color:#fff0c9;
+      text-shadow:0 0 16px rgba(255,207,90,.4);
+    }
+    .note{
+      font-size:14px; color:var(--muted); line-height:1.7;
+      background:#0d1430;border:1px solid var(--line);border-radius:16px;padding:12px
+    }
+  </style>
 </head>
-
 <body>
+<div class="wrap">
+  <div class="panel">
+    <h1>バトルコロシアムタッグ</h1>
+    <div class="sub">
+      /random の結果を手入力して、タッグ戦のHP・交代・LB・防御・ログを管理します。
+    </div>
+  </div>
 
-<h1>バトルコロシアムタッグ</h1>
+  <div id="winnerPanel" class="panel" style="display:none">
+    <div id="winnerText" class="winner"></div>
+  </div>
 
-<div class="hp">
-チームA HP  
-<span id="hpA">3000</span>
-</div>
+  <div class="grid">
+    <div class="panel" id="teamABox"></div>
+    <div class="panel" id="teamBBox"></div>
+  </div>
 
-<div class="hp">
-チームB HP  
-<span id="hpB">3000</span>
-</div>
+  <div class="panel">
+    <div class="turn" id="turnText">現在のターン：チームA</div>
+    <div class="row" style="margin-bottom:10px">
+      <button class="ghost" onclick="setAttacker('A')">チームAを攻撃側にする</button>
+      <button class="ghost" onclick="setAttacker('B')">チームBを攻撃側にする</button>
+    </div>
+    <div class="row" style="margin-bottom:10px">
+      <input id="rollInput" inputmode="numeric" placeholder="/random の結果（000〜999）" maxlength="3">
+      <button class="primary" onclick="applyRoll()">数字でダメージ計算</button>
+    </div>
+    <div class="row">
+      <button class="gold" onclick="nextTurn()">ターンを切り替え</button>
+      <button class="danger" onclick="resetGame()">試合リセット</button>
+    </div>
+    <div class="note" style="margin-top:12px">
+      通常は100の位×100。ゾロ目は+200。999は1800ダメージ。000は自分のチームに1000ダメージ。<br>
+      交代すると、交代先メンバーが初回のみHP+500。HP1000未満でチームごとに1回だけLB使用可能。<br>
+      LB攻撃：次の攻撃に+500 / LB回復：HP+600 / LB防御：次に受ける1回を無効化
+    </div>
+  </div>
 
-<button onclick="attack('A')">チームA攻撃</button>
-<button onclick="attack('B')">チームB攻撃</button>
-
-<br>
-
-<button class="reset" onclick="resetGame()">試合リセット</button>
-
-<div class="log" id="log">
-ここに結果が表示されます
+  <div class="panel">
+    <div class="section-title">バトルログ</div>
+    <div id="logBox" class="log"></div>
+  </div>
 </div>
 
 <script>
+const MAX_HP = 3000;
 
-let hpA = 3000
-let hpB = 3000
-
-function randomDice(){
-return Math.floor(Math.random()*1000)
+function teamFactory(name){
+  return {
+    name,
+    hp: MAX_HP,
+    active: 0,
+    switchHealUsed: [false, false],
+    lbUsed: false,
+    pendingLbAttack: false,
+    defenseReady: false
+  };
 }
 
-function attack(team){
+let state = {
+  turn: 1,
+  attacker: 'A',
+  teams: {
+    A: teamFactory('チームA'),
+    B: teamFactory('チームB')
+  },
+  logs: ['試合開始。攻撃側を選び、/random の結果を入力してください。']
+};
 
-let dice = randomDice()
-let damage = Math.floor(dice/100)*100
-
-if(dice===999){
-damage = damage*2
+function saveState(){
+  localStorage.setItem('battle_colosseum_tag_complete_v1', JSON.stringify(state));
 }
-
-if(dice%111===0 && dice!==0){
-damage +=200
+function loadState(){
+  try{
+    const raw = localStorage.getItem('battle_colosseum_tag_complete_v1');
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed && parsed.teams && parsed.logs){ state = parsed; }
+    }
+  }catch(e){}
 }
-
-if(dice===0){
-damage = -1000
+function pad3(v){ return String(v).padStart(3,'0'); }
+function clampHp(v){ return Math.max(0, Math.min(MAX_HP, v)); }
+function memberName(i){ return i === 0 ? '前衛A' : '前衛B'; }
+function defenderKey(){ return state.attacker === 'A' ? 'B' : 'A'; }
+function addLog(text){
+  state.logs.unshift(text);
+  state.logs = state.logs.slice(0, 30);
+  renderLogs();
+  saveState();
 }
-
-if(team==="A"){
-
-hpB -= damage
-
-if(damage<0){
-hpA +=1000
+function isZorome(n){
+  const s = pad3(n);
+  return s[0] === s[1] && s[1] === s[2];
 }
-
+function calcResult(n, bonus){
+  if(!Number.isInteger(n) || n < 0 || n > 999) return {ok:false,msg:'000〜999 の数字を入力してください。'};
+  if(n === 0) return {ok:true, self:1000, damage:0, label:'自爆', msg:'000：自分のチームに1000ダメージ'};
+  if(n === 999){
+    const damage = 1800 + bonus;
+    return {ok:true, self:0, damage, label:'999特攻', msg:`999：1800${bonus?` + LB500`:''} = ${damage}ダメージ`};
+  }
+  const base = Math.floor(n/100)*100;
+  if(isZorome(n)){
+    const damage = base + 200 + bonus;
+    return {ok:true, self:0, damage, label:'クリティカル', msg:`ゾロ目：${base} + 200${bonus?` + LB500`:''} = ${damage}ダメージ`};
+  }
+  const damage = base + bonus;
+  return {ok:true, self:0, damage, label:'通常', msg:`通常：${base}${bonus?` + LB500`:''} = ${damage}ダメージ`};
 }
-
-if(team==="B"){
-
-hpA -= damage
-
-if(damage<0){
-hpB +=1000
+function setAttacker(key){
+  state.attacker = key;
+  renderAll();
+  saveState();
 }
-
+function nextTurn(){
+  state.turn += 1;
+  state.attacker = defenderKey();
+  addLog(`ターンを切り替え → ターン${state.turn}、攻撃側は ${state.teams[state.attacker].name}`);
+  renderAll();
 }
-
-update()
-
-document.getElementById("log").innerHTML =
-"ダイス:"+dice+" ダメージ:"+damage
-
+function handleSwitch(key){
+  const t = state.teams[key];
+  t.active = t.active === 0 ? 1 : 0;
+  let healText = '交代回復はこのメンバーでは使用済み。';
+  if(!t.switchHealUsed[t.active]){
+    t.switchHealUsed[t.active] = true;
+    t.hp = clampHp(t.hp + 500);
+    healText = '交代回復で HP +500。';
+  }
+  addLog(`${t.name} が ${memberName(t.active)} に交代。${healText}`);
+  renderAll();
 }
-
-function update(){
-
-document.getElementById("hpA").innerHTML = hpA
-document.getElementById("hpB").innerHTML = hpB
-
-if(hpA<=0){
-alert("チームB勝利！")
+function useLB(key, type){
+  const t = state.teams[key];
+  if(t.lbUsed){
+    addLog(`${t.name} はすでにLBを使用済みです。`);
+    return;
+  }
+  if(t.hp >= 1000){
+    addLog(`${t.name} は HP1000未満でないためLBを使えません。`);
+    return;
+  }
+  t.lbUsed = true;
+  if(type === 'attack'){
+    t.pendingLbAttack = true;
+    addLog(`${t.name} が LB攻撃を使用。次の攻撃に +500。`);
+  }else if(type === 'heal'){
+    t.hp = clampHp(t.hp + 600);
+    addLog(`${t.name} が LB回復を使用。HP +600。`);
+  }else if(type === 'defense'){
+    t.defenseReady = true;
+    addLog(`${t.name} が LB防御を使用。次に受ける1回を無効化。`);
+  }
+  renderAll();
 }
+function applyRoll(){
+  const raw = document.getElementById('rollInput').value.trim();
+  const n = Number(raw);
+  const atkKey = state.attacker;
+  const defKey = defenderKey();
+  const atk = state.teams[atkKey];
+  const def = state.teams[defKey];
+  const bonus = atk.pendingLbAttack ? 500 : 0;
+  const result = calcResult(n, bonus);
 
-if(hpB<=0){
-alert("チームA勝利！")
+  if(!result.ok){
+    addLog(result.msg);
+    return;
+  }
+
+  if(atk.pendingLbAttack) atk.pendingLbAttack = false;
+
+  if(result.self > 0){
+    atk.hp = clampHp(atk.hp - result.self);
+    addLog(`ターン${state.turn} / ${atk.name} / ${pad3(n)} → ${result.msg}`);
+    document.getElementById('rollInput').value = '';
+    renderAll();
+    return;
+  }
+
+  if(def.defenseReady){
+    def.defenseReady = false;
+    addLog(`ターン${state.turn} / ${atk.name} / ${pad3(n)} → ${result.label} だったが、${def.name} はLB防御で無効化。`);
+    document.getElementById('rollInput').value = '';
+    renderAll();
+    return;
+  }
+
+  def.hp = clampHp(def.hp - result.damage);
+  addLog(`ターン${state.turn} / ${atk.name} / ${pad3(n)} → ${result.msg} / ${def.name} のHP ${def.hp}`);
+  document.getElementById('rollInput').value = '';
+  renderAll();
 }
-
+function winnerText(){
+  const a = state.teams.A.hp;
+  const b = state.teams.B.hp;
+  if(a <= 0 && b <= 0) return '両チーム同時撃破';
+  if(a <= 0) return '勝者：チームB';
+  if(b <= 0) return '勝者：チームA';
+  return '';
 }
-
 function resetGame(){
-
-hpA = 3000
-hpB = 3000
-
-update()
-
-document.getElementById("log").innerHTML =
-"試合リセット"
-
+  state = {
+    turn: 1,
+    attacker: 'A',
+    teams: { A: teamFactory('チームA'), B: teamFactory('チームB') },
+    logs: ['試合をリセットしました。新しい試合を始めてください。']
+  };
+  document.getElementById('rollInput').value = '';
+  renderAll();
 }
-
-</かscript>
-
+function teamHtml(key){
+  const t = state.teams[key];
+  const canLb = t.hp < 1000 && !t.lbUsed;
+  const percent = Math.max(0, t.hp / MAX_HP * 100);
+  const isAtk = state.attacker === key;
+  return `
+    <div class="team-title">
+      <div>${t.name}</div>
+      <div class="mini">${isAtk ? '攻撃側' : '防御側'}</div>
+    </div>
+    <div class="hp-row"><div>共有HP</div><div><b>${t.hp}</b> / ${MAX_HP}</div></div>
+    <div class="bar"><div class="fill ${key==='B' ? 'red' : ''}" style="width:${percent}%"></div></div>
+    <div class="status-row">
+      <div class="chip ${isAtk?'on':''}">${isAtk?'攻撃中':'待機中'}</div>
+      <div class="chip ${t.pendingLbAttack?'on':''}">${t.pendingLbAttack?'次攻撃+500':'LB攻撃待機なし'}</div>
+      <div class="chip ${t.defenseReady?'on':''}">${t.defenseReady?'防御待機中':'防御待機なし'}</div>
+      <div class="chip ${t.lbUsed?'on':''}">${t.lbUsed?'LB使用済み':'LB未使用'}</div>
+    </div>
+    <div class="members">
+      <div class="member ${t.active===0?'active':''}">
+        <div class="name">前衛A</div>
+        <div class="desc">交代回復：${t.switchHealUsed[0] ? '使用済み' : '未使用'}</div>
+      </div>
+      <div class="member ${t.active===1?'active':''}">
+        <div class="name">前衛B</div>
+        <div class="desc">交代回復：${t.switchHealUsed[1] ? '使用済み' : '未使用'}</div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="ghost" onclick="handleSwitch('${key}')">交代する</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="green" ${canLb?'':'disabled'} onclick="useLB('${key}','attack')">LB攻撃</button>
+      <button class="green" ${canLb?'':'disabled'} onclick="useLB('${key}','heal')">LB回復</button>
+      <button class="green" ${canLb?'':'disabled'} onclick="useLB('${key}','defense')">LB防御</button>
+    </div>
+    <div class="help" style="margin-top:8px">HP1000未満で、チームごとに1回だけ使用できます。</div>
+  `;
+}
+function renderLogs(){
+  document.getElementById('logBox').innerHTML = state.logs.map(v => `<div class="log-item">${v}</div>`).join('');
+}
+function renderAll(){
+  document.getElementById('teamABox').innerHTML = teamHtml('A');
+  document.getElementById('teamBBox').innerHTML = teamHtml('B');
+  document.getElementById('turnText').textContent = `現在のターン：${state.turn} / 攻撃側：${state.teams[state.attacker].name}`;
+  renderLogs();
+  const w = winnerText();
+  const wp = document.getElementById('winnerPanel');
+  const wt = document.getElementById('winnerText');
+  if(w){
+    wp.style.display = '';
+    wt.textContent = w;
+  }else{
+    wp.style.display = 'none';
+    wt.textContent = '';
+  }
+  saveState();
+}
+document.getElementById('rollInput').addEventListener('input', function(e){
+  e.target.value = e.target.value.replace(/[^0-9]/g,'').slice(0,3);
+});
+loadState();
+renderAll();
+</script>
 </body>
 </html>
