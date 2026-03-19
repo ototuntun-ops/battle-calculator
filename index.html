@@ -77,15 +77,10 @@
       position:relative;
       transition:transform .14s ease, box-shadow .14s ease, filter .2s ease;
     }
-    .team-card.hit{
-      animation:hitFlash .35s ease;
-    }
-    .team-card.critical-hit{
-      animation:criticalFlash .5s ease;
-    }
-    .team-card.jackpot-hit{
-      animation:jackpotFlash .7s ease;
-    }
+    .team-card.hit{ animation:hitFlash .35s ease; }
+    .team-card.critical-hit{ animation:criticalFlash .5s ease; }
+    .team-card.jackpot-hit{ animation:jackpotFlash .7s ease; }
+
     @keyframes hitFlash{
       0%{transform:translateX(0);filter:brightness(1)}
       15%{transform:translateX(-5px);filter:brightness(1.35)}
@@ -105,6 +100,7 @@
       40%{transform:scale(.99);filter:brightness(1.15)}
       100%{transform:scale(1);filter:brightness(1)}
     }
+
     .team-title{
       display:flex;
       justify-content:space-between;
@@ -114,10 +110,8 @@
       font-size:24px;
       font-weight:800;
     }
-    .mini{
-      font-size:12px;
-      color:var(--muted);
-    }
+    .mini{ font-size:12px; color:var(--muted); }
+
     .name-block{
       display:flex;
       flex-direction:column;
@@ -128,6 +122,7 @@
       color:var(--muted);
       line-height:1.45;
     }
+
     .hp-row{
       display:flex;
       justify-content:space-between;
@@ -170,6 +165,7 @@
     @keyframes shine{
       to{transform:translateX(100%)}
     }
+
     .status-row{
       display:flex;
       gap:8px;
@@ -188,6 +184,7 @@
       border-color:#508cff;
       box-shadow:0 0 10px rgba(80,140,255,.20);
     }
+
     .members{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -215,6 +212,7 @@
       margin-top:6px;
       line-height:1.45;
     }
+
     .row{
       display:flex;
       gap:10px;
@@ -223,6 +221,7 @@
     .row > *{
       flex:1 1 160px;
     }
+
     button, input{
       width:100%;
       border-radius:16px;
@@ -241,17 +240,15 @@
       box-shadow:var(--shadow);
       transition:transform .08s ease, filter .15s ease;
     }
-    button:active{
-      transform:scale(.98);
-    }
-    button:disabled{
-      opacity:.45;
-    }
+    button:active{ transform:scale(.98); }
+    button:disabled{ opacity:.45; }
+
     .primary{background:linear-gradient(180deg,#379cf2,#277fd0)}
     .danger{background:linear-gradient(180deg,#ff6666,#eb4d4d)}
     .green{background:linear-gradient(180deg,#46d6a2,#2aa97d)}
     .gold{background:linear-gradient(180deg,#ffd56b,#d9aa2f); color:#2b2205}
     .ghost{background:#0f1630}
+
     .section-title{
       font-size:18px;
       font-weight:800;
@@ -273,6 +270,7 @@
       padding:12px;
       margin-top:12px;
     }
+
     .log{
       display:flex;
       flex-direction:column;
@@ -288,6 +286,7 @@
       line-height:1.55;
       font-size:14px;
     }
+
     .winner{
       text-align:center;
       font-size:28px;
@@ -295,16 +294,14 @@
       color:#fff0c9;
       text-shadow:0 0 16px rgba(255,207,90,.4);
     }
-    .settings-toggle{
-      margin-top:10px;
-    }
+
+    .settings-toggle{ margin-top:10px; }
     .settings-body{
       margin-top:12px;
       display:none;
     }
-    .settings-body.open{
-      display:block;
-    }
+    .settings-body.open{ display:block; }
+
     .settings-grid{
       display:grid;
       grid-template-columns:1fr;
@@ -313,6 +310,7 @@
     @media(min-width:760px){
       .settings-grid{grid-template-columns:1fr 1fr}
     }
+
     .settings-box{
       background:#0d1430;
       border:1px solid var(--line);
@@ -323,15 +321,14 @@
       margin:0 0 10px;
       font-size:17px;
     }
-    .field{
-      margin-bottom:10px;
-    }
+    .field{ margin-bottom:10px; }
     .field label{
       display:block;
       font-size:12px;
       color:var(--muted);
       margin-bottom:6px;
     }
+
     .floating-layer{
       pointer-events:none;
       position:fixed;
@@ -393,6 +390,7 @@
       background:linear-gradient(180deg,#ffe287,#ffb100);
       color:#2e1e00;
     }
+
     @keyframes popUp{
       0%{opacity:0; transform:translate(-50%,0) scale(.45)}
       12%{opacity:1; transform:translate(-50%,-6px) scale(1.15)}
@@ -412,7 +410,7 @@
 
   <div class="wrap">
     <div class="panel">
-      <h1>バトルコロシアムタッグ Ver2</h1>
+      <h1>バトルコロシアムタッグ Ver2.1</h1>
       <div class="sub">
         /random の結果を手入力して、タッグ戦のHP・交代・LB・防御・演出・ログを管理します。
       </div>
@@ -435,6 +433,10 @@
               <label>前衛B キャラ名</label>
               <input id="teamAChar2Input" placeholder="キャラ名">
             </div>
+            <div class="field">
+              <label>初期HP（1000〜9999）</label>
+              <input id="maxHpInput" inputmode="numeric" placeholder="3000">
+            </div>
           </div>
           <div class="settings-box">
             <h3>チームB設定</h3>
@@ -449,6 +451,9 @@
             <div class="field">
               <label>前衛B キャラ名</label>
               <input id="teamBChar2Input" placeholder="キャラ名">
+            </div>
+            <div class="note" style="margin-top:0">
+              初期HPを変更すると、次回のリセット時からその値が試合全体に反映されます。
             </div>
           </div>
         </div>
@@ -495,12 +500,22 @@
   </div>
 
   <script>
-    const MAX_HP = 3000;
+    function sanitizeMaxHp(v){
+      let n = parseInt(v, 10);
+      if(Number.isNaN(n)) n = 3000;
+      if(n < 1000) n = 1000;
+      if(n > 9999) n = 9999;
+      return n;
+    }
 
-    function teamFactory(name){
+    function getCurrentMaxHp(){
+      return sanitizeMaxHp(state.maxHp || 3000);
+    }
+
+    function teamFactory(name, maxHp){
       return {
         name,
-        hp: MAX_HP,
+        hp: maxHp,
         active: 0,
         switchHealUsed: [false, false],
         lbUsed: false,
@@ -514,31 +529,36 @@
       turn: 1,
       attacker: 'A',
       settingsOpen: false,
+      maxHp: 3000,
       teams: {
-        A: teamFactory('チームA'),
-        B: teamFactory('チームB')
+        A: teamFactory('チームA', 3000),
+        B: teamFactory('チームB', 3000)
       },
       logs: ['試合開始。攻撃側を選び、/random の結果を入力してください。']
     };
 
     function saveState(){
-      localStorage.setItem('battle_colosseum_tag_v2', JSON.stringify(state));
+      localStorage.setItem('battle_colosseum_tag_v21', JSON.stringify(state));
     }
 
     function loadState(){
       try{
-        const raw = localStorage.getItem('battle_colosseum_tag_v2');
+        const raw = localStorage.getItem('battle_colosseum_tag_v21');
         if(raw){
           const parsed = JSON.parse(raw);
           if(parsed && parsed.teams && parsed.logs){
             state = parsed;
+            state.maxHp = sanitizeMaxHp(state.maxHp || 3000);
+            state.teams.A.hp = Math.min(state.teams.A.hp, state.maxHp);
+            state.teams.B.hp = Math.min(state.teams.B.hp, state.maxHp);
           }
         }
       }catch(e){}
     }
 
     function clampHp(v){
-      return Math.max(0, Math.min(MAX_HP, v));
+      const maxHp = getCurrentMaxHp();
+      return Math.max(0, Math.min(maxHp, v));
     }
 
     function defenderKey(){
@@ -609,6 +629,7 @@
       document.getElementById('teamAChar2Input').value = state.teams.A.chars[1] || '';
       document.getElementById('teamBChar1Input').value = state.teams.B.chars[0] || '';
       document.getElementById('teamBChar2Input').value = state.teams.B.chars[1] || '';
+      document.getElementById('maxHpInput').value = state.maxHp || 3000;
     }
 
     function saveNames(){
@@ -618,7 +639,8 @@
       state.teams.A.chars[1] = document.getElementById('teamAChar2Input').value.trim() || '未設定B';
       state.teams.B.chars[0] = document.getElementById('teamBChar1Input').value.trim() || '未設定A';
       state.teams.B.chars[1] = document.getElementById('teamBChar2Input').value.trim() || '未設定B';
-      addLog('設定を保存しました。');
+      state.maxHp = sanitizeMaxHp(document.getElementById('maxHpInput').value);
+      addLog(`設定を保存しました。初期HPは ${state.maxHp} に設定されています。`);
       renderAll();
     }
 
@@ -782,16 +804,18 @@
       const keepAChars = [...state.teams.A.chars];
       const keepBChars = [...state.teams.B.chars];
       const keepOpen = state.settingsOpen;
+      const keepMaxHp = sanitizeMaxHp(state.maxHp || 3000);
 
       state = {
         turn: 1,
         attacker: 'A',
         settingsOpen: keepOpen,
+        maxHp: keepMaxHp,
         teams: {
-          A: teamFactory(keepA || 'チームA'),
-          B: teamFactory(keepB || 'チームB')
+          A: teamFactory(keepA || 'チームA', keepMaxHp),
+          B: teamFactory(keepB || 'チームB', keepMaxHp)
         },
-        logs: ['試合をリセットしました。新しい試合を始めてください。']
+        logs: [`試合をリセットしました。初期HP ${keepMaxHp} で新しい試合を始めてください。`]
       };
 
       state.teams.A.chars = keepAChars;
@@ -803,7 +827,8 @@
 
     function teamHtml(key){
       const t = state.teams[key];
-      const percent = Math.max(0, (t.hp / MAX_HP) * 100);
+      const maxHp = getCurrentMaxHp();
+      const percent = Math.max(0, (t.hp / maxHp) * 100);
       const isAtk = state.attacker === key;
       const canLb = t.hp < 1000 && !t.lbUsed;
 
@@ -821,7 +846,7 @@
 
         <div class="hp-row">
           <div>共有HP</div>
-          <div><b>${t.hp}</b> / ${MAX_HP}</div>
+          <div><b>${t.hp}</b> / ${maxHp}</div>
         </div>
 
         <div class="bar">
@@ -871,7 +896,6 @@
       document.getElementById('teamBBox').innerHTML = teamHtml('B');
       document.getElementById('turnText').textContent =
         `現在のターン：${state.turn} / 攻撃側：${state.teams[state.attacker].name}`;
-
       renderSettings();
       renderLogs();
 
