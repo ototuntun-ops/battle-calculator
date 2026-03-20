@@ -430,8 +430,9 @@
   </style>
 </head>
 <body>
-  <audio id="bgm" loop preload="auto">
+  <audio id="bgm" loop preload="auto" playsinline>
     <source src="bgm.m4a.m4a" type="audio/mp4">
+    <source src="bgm.m4a" type="audio/mp4">
   </audio>
 
   <div class="floating-layer" id="fxLayer"></div>
@@ -985,14 +986,16 @@
       e.target.value = e.target.value.replace(/[^0-9]/g,'').slice(0,3);
     });
 
-    document.getElementById('bgm').addEventListener('ended', function(){
+    const bgmEl = document.getElementById('bgm');
+
+    bgmEl.addEventListener('ended', function(){
       isBgmPlaying = false;
       const btn = document.getElementById('bgmToggleBtn');
       btn.textContent = 'BGMを再生';
       updateBGMStatus();
     });
 
-    document.getElementById('bgm').addEventListener('pause', function(){
+    bgmEl.addEventListener('pause', function(){
       if(isBgmPlaying){
         isBgmPlaying = false;
         const btn = document.getElementById('bgmToggleBtn');
@@ -1001,11 +1004,16 @@
       }
     });
 
-    document.getElementById('bgm').addEventListener('play', function(){
+    bgmEl.addEventListener('play', function(){
       isBgmPlaying = true;
       const btn = document.getElementById('bgmToggleBtn');
       btn.textContent = 'BGMを停止';
       updateBGMStatus();
+    });
+
+    bgmEl.addEventListener('error', function(){
+      const status = document.getElementById('bgmStatus');
+      status.textContent = 'BGM読込エラー：音源ファイル名または配置を確認してください。';
     });
 
     loadState();
