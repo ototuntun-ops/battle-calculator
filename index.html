@@ -239,6 +239,7 @@
       font-weight:800;
       box-shadow:var(--shadow);
       transition:transform .08s ease, filter .15s ease;
+      cursor:pointer;
     }
     button:active{ transform:scale(.98); }
     button:disabled{ opacity:.45; }
@@ -391,6 +392,29 @@
       color:#2e1e00;
     }
 
+    .bgm-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .bgm-row > *{
+      flex:1 1 220px;
+    }
+    .bgm-status{
+      min-height:52px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#0d1430;
+      color:var(--muted);
+      font-size:14px;
+      padding:12px 14px;
+      text-align:center;
+    }
+
     @keyframes popUp{
       0%{opacity:0; transform:translate(-50%,0) scale(.45)}
       12%{opacity:1; transform:translate(-50%,-6px) scale(1.15)}
@@ -406,6 +430,10 @@
   </style>
 </head>
 <body>
+  <audio id="bgm" loop preload="auto">
+    <source src="bgm.m4a" type="audio/mp4">
+  </audio>
+
   <div class="floating-layer" id="fxLayer"></div>
 
   <div class="wrap">
@@ -414,6 +442,12 @@
       <div class="sub">
         /random の結果を手入力して、タッグ戦のHP・交代・LB・防御・演出・ログを管理します。
       </div>
+
+      <div class="bgm-row">
+        <button id="bgmToggleBtn" class="green" onclick="toggleBGM()">BGMを再生</button>
+        <div id="bgmStatus" class="bgm-status">BGM：停止中</div>
+      </div>
+
       <div class="settings-toggle">
         <button class="ghost" onclick="toggleSettings()">設定欄を開く / 閉じる</button>
       </div>
@@ -536,6 +570,8 @@
       },
       logs: ['試合開始。攻撃側を選び、/random の結果を入力してください。']
     };
+
+    let isBgmPlaying = false;
 
     function saveState(){
       localStorage.setItem('battle_colosseum_tag_v21', JSON.stringify(state));
@@ -745,6 +781,36 @@
       setTimeout(()=>b.remove(), 1100);
     }
 
+    async function toggleBGM(){
+      const bgm = document.getElementById('bgm');
+      const btn = document.getElementById('bgmToggleBtn');
+
+      try{
+        if(!isBgmPlaying){
+          await bgm.play();
+          isBgmPlaying = true;
+          btn.textContent = 'BGMを停止';
+        }else{
+          bgm.pause();
+          isBgmPlaying = false;
+          btn.textContent = 'BGMを再生';
+        }
+        updateBGMStatus();
+      }catch(e){
+        const status = document.getElementById('bgmStatus');
+        status.textContent = 'BGMを再生できませんでした。音源名や配置を確認してください。';
+      }
+    }
+
+    function updateBGMStatus(){
+      const status = document.getElementById('bgmStatus');
+      if(isBgmPlaying){
+        status.textContent = 'BGM：再生中';
+      }else{
+        status.textContent = 'BGM：停止中';
+      }
+    }
+
     function applyRoll(){
       const raw = document.getElementById('rollInput').value.trim();
       const n = Number(raw);
@@ -898,6 +964,7 @@
         `現在のターン：${state.turn} / 攻撃側：${state.teams[state.attacker].name}`;
       renderSettings();
       renderLogs();
+      updateBGMStatus();
 
       const w = winnerText();
       const wp = document.getElementById('winnerPanel');
@@ -916,6 +983,29 @@
 
     document.getElementById('rollInput').addEventListener('input', function(e){
       e.target.value = e.target.value.replace(/[^0-9]/g,'').slice(0,3);
+    });
+
+    document.getElementById('bgm').addEventListener('ended', function(){
+      isBgmPlaying = false;
+      const btn = document.getElementById('bgmToggleBtn');
+      btn.textContent = 'BGMを再生';
+      updateBGMStatus();
+    });
+
+    document.getElementById('bgm').addEventListener('pause', function(){
+      if(isBgmPlaying){
+        isBgmPlaying = false;
+        const btn = document.getElementById('bgmToggleBtn');
+        btn.textContent = 'BGMを再生';
+        updateBGMStatus();
+      }
+    });
+
+    document.getElementById('bgm').addEventListener('play', function(){
+      isBgmPlaying = true;
+      const btn = document.getElementById('bgmToggleBtn');
+      btn.textContent = 'BGMを停止';
+      updateBGMStatus();
     });
 
     loadState();
