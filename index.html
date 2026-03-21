@@ -431,8 +431,12 @@
 </head>
 <body>
   <audio id="bgm" loop preload="auto" playsinline>
-    <source src="bgm.m4a.mp3" type="audio/mp3">
-    <source src="bgm.m4a" type="audio/mp3">
+    <source src="bgm.m4a.mp3" type="audio/mpeg">
+    <source src="bgm.m4a" type="audio/mp4">
+  </audio>
+
+  <audio id="seClick" preload="auto" playsinline>
+    <source src="click.mp3" type="audio/mpeg">
   </audio>
 
   <div class="floating-layer" id="fxLayer"></div>
@@ -812,6 +816,13 @@
       }
     }
 
+    function playClickSE(){
+      const se = document.getElementById('seClick');
+      if(!se) return;
+      se.currentTime = 0;
+      se.play().catch(() => {});
+    }
+
     function applyRoll(){
       const raw = document.getElementById('rollInput').value.trim();
       const n = Number(raw);
@@ -979,7 +990,18 @@
         wt.textContent = '';
       }
 
+      attachClickSEToButtons();
       saveState();
+    }
+
+    function attachClickSEToButtons(){
+      document.querySelectorAll('button').forEach(btn => {
+        if(btn.dataset.seBound === '1') return;
+        btn.dataset.seBound = '1';
+        btn.addEventListener('click', function(){
+          playClickSE();
+        });
+      });
     }
 
     document.getElementById('rollInput').addEventListener('input', function(e){
